@@ -1,11 +1,24 @@
 # Streaming Calculator
 
 [![Live site](https://img.shields.io/badge/live-streamingcalculator.com-5ce7c4?style=flat-square)](https://streamingcalculator.com)
-[![CI](https://github.com/filpgc/streaming-calculator/actions/workflows/ci.yml/badge.svg)](https://github.com/filpgc/streaming-calculator/actions/workflows/ci.yml)
+[![CI](https://github.com/filpgc/streaming-calculator-showcase/actions/workflows/ci.yml/badge.svg)](https://github.com/filpgc/streaming-calculator-showcase/actions/workflows/ci.yml)
 
 An independent creator-tools platform that turns opaque platform economics into useful, understandable calculations. It reaches approximately **20k views per month**, has earned around **800 backlinks**, and is designed, built and operated by [Filippo Piggici](https://github.com/filpgc).
 
-![Multi-platform streaming royalty calculator](docs/calculator.webp)
+<table>
+  <tr>
+    <td width="50%">
+      <img src="docs/calculator.webp" alt="Multi-platform streaming royalty calculator" />
+    </td>
+    <td width="50%">
+      <img src="docs/distributor-comparison.png" alt="Music distributor cost comparison" />
+    </td>
+  </tr>
+  <tr>
+    <td><sub>Multi-platform royalty calculations with live per-platform results.</sub></td>
+    <td><sub>Distributor costs compared against each creator's actual release model.</sub></td>
+  </tr>
+</table>
 
 ## About this public repository
 
@@ -41,8 +54,6 @@ Streaming Calculator treats the calculation as a product. Each surface keeps ass
 - YouTube, TikTok and Twitch tools with platform-specific assumptions instead of one generic formula.
 - A royalty-advance calculator, comparison pages and more than 50 editorial guides.
 - Contextual sponsor slots and first-party aggregate click measurement on Cloudflare.
-
-![Music distributor cost comparison](docs/distributor-comparison.png)
 
 ## Product system
 
