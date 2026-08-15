@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+
+# Commercial redirects. Every sponsor and affiliate link on the site points at
+# /go/<key>, which 302s to the merchant, and some of those placements are paid.
+# Left crawlable, a paid placement can pass equity through the redirect, which is
+# the definition of a link scheme however carefully the visible anchor is marked
+# with rel="sponsored". Blocking the path breaks the chain at the only point that
+# matters. Nothing under /go/ should ever rank anyway: they are redirects, not
+# pages, and they carry no content.
+Disallow: /go/
+
+Sitemap: https://streamingcalculator.com/sitemap.xml

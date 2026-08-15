@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" preserveAspectRatio="xMinYMin">
+  <circle fill="red" cx="96" cy="96" r="88" fill-opacity="0.8"/>
+  <path fill="#FFF" d="M96 54.04c23.14 0 41.96 18.82 41.96 41.96S119.14 137.96 96 137.96 54.04 119.14 54.04 96 72.86 54.04 96 54.04M96 50c-25.41 0-46 20.59-46 46s20.59 46 46 46 46-20.59 46-46-20.59-46-46-46z"/>
+  <path fill="#FFF" d="M80 119l39-24-39-22z"/>
+</svg>

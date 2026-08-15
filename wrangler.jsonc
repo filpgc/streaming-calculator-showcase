@@ -1,0 +1,28 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "streaming-calculator-public",
+  "compatibility_date": "2026-03-12",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "main": ".svelte-kit/cloudflare/_worker.js",
+  "assets": {
+    "binding": "ASSETS",
+    "directory": ".svelte-kit/cloudflare"
+  },
+  "workers_dev": true,
+  "preview_urls": true,
+  "observability": {
+    "enabled": true
+  },
+  "analytics_engine_datasets": [
+    {
+      "binding": "SPONSOR_CLICKS",
+      "dataset": "sponsor_clicks"
+    },
+    {
+      "binding": "OFFER_VIEWS",
+      "dataset": "offer_views"
+    }
+  ]
+}

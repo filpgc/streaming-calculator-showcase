@@ -1,0 +1,2707 @@
+@import "tailwindcss";
+
+/* Inter, self-hosted. Loading this from fonts.googleapis.com meant two extra
+   DNS + TCP + TLS chains (the stylesheet host, then fonts.gstatic.com) before
+   any text could render in the real face. That is cheap on a fast connection,
+   but a large share of this site's traffic is on slow mobile networks where
+   those round trips dominate. Served from our own origin it is one request on
+   a connection the browser has already opened.
+
+   Variable weight 350-900, matching the axis range the old Google Fonts URL
+   requested. unicode-range keeps latin-ext from being fetched at all unless a
+   page actually uses those characters. */
+@font-face {
+	font-family: 'Inter';
+	font-style: normal;
+	font-weight: 350 900;
+	font-display: swap;
+	src: url('/fonts/inter-latin.woff2') format('woff2');
+	unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+	font-family: 'Inter';
+	font-style: normal;
+	font-weight: 350 900;
+	font-display: swap;
+	src: url('/fonts/inter-latin-ext.woff2') format('woff2');
+	unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@custom-variant hover (&:hover) @media (hover: hover);
+
+/* View Transitions */
+@view-transition {
+	navigation: auto;
+}
+
+@keyframes fade-in {
+	from { opacity: 0; }
+}
+
+@keyframes fade-out {
+	to { opacity: 0; }
+}
+
+::view-transition-old(root) {
+	animation: 90ms cubic-bezier(0.4, 0, 1, 1) both fade-out;
+}
+
+::view-transition-new(root) {
+	animation: 150ms cubic-bezier(0, 0, 0.2, 1) 90ms both fade-in;
+}
+
+@theme {
+	--color-bg: hsl(0, 0%, 8%);
+	--color-surface: hsl(0, 0%, 10.2%);
+	--color-border: hsl(0, 0%, 19%);
+	--color-divider: hsl(0, 0%, 15%);
+	--color-accent: #34d399;
+	--color-accent-dim: oklch(72% 0.15 163 / 0.15);
+	--color-text: #efefef;
+	--color-text-secondary: #a3a3a3;
+	--color-text-muted: #858585;
+}
+
+/* Plain custom properties for component <style> blocks, which are scoped and
+   cannot read Tailwind's @theme tokens. Keep in sync with @theme above: a name
+   that is used but not defined here silently drops the whole declaration,
+   which is how the row dividers and accent tints went missing. */
+:root {
+	--bg: hsl(0, 0%, 8%);
+	--text: #efefef;
+	--text-secondary: #a3a3a3;
+	--text-muted: #858585;
+	--accent: #34d399;
+	--accent-dim: oklch(72% 0.15 163 / 0.15);
+	--surface: hsl(0, 0%, 11%);
+	--border: hsl(0, 0%, 19%);
+	--divider: hsl(0, 0%, 15%);
+
+	/*
+	 * Hover, and there are only two treatments on the whole site.
+	 *
+	 *   FILL  something inside a container: a nav item, a table row, an input
+	 *         row, an FAQ question. Background lifts, nothing moves.
+	 *   RAISE a standalone card or banner. Edge brightens, it rises 1px, it
+	 *         casts a shadow.
+	 *
+	 * Neither is ever accent-coloured. Green on hover made a link look selected
+	 * rather than pointed at, and it collided with the accent's real job, which
+	 * is marking the active item and the earnings figure. Before this there were
+	 * five treatments and three different hover colours, including a blue border
+	 * on one affiliate banner and nine per-brand borders on the ad slots.
+	 */
+	--hover-fill: rgba(255, 255, 255, 0.05);
+	/* For hovering something that already carries a resting fill, so the hover
+	   still reads as brighter rather than darker. */
+	--hover-fill-strong: rgba(255, 255, 255, 0.1);
+	--hover-edge: rgba(255, 255, 255, 0.18);
+	--hover-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+
+html {
+	background: var(--color-bg);
+	color: var(--text);
+	font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+body {
+	@apply bg-bg min-h-screen antialiased;
+}
+
+::selection {
+	background: oklch(72% 0.15 163 / 0.25);
+	color: #fff;
+}
+
+:focus-visible {
+	outline: 1.5px solid var(--accent);
+	outline-offset: 2px;
+	border-radius: 4px;
+}
+
+.site-content {
+	padding-top: 0;
+}
+
+@media (min-width: 768px) {
+	.site-content {
+		padding-top: 36px;
+	}
+}
+
+.container {
+	@apply max-w-[480px] mx-auto px-5;
+}
+
+@media (min-width: 640px) {
+	.container {
+		@apply max-w-[530px] px-6;
+	}
+}
+
+.container-wide {
+	@apply max-w-[480px] mx-auto px-5;
+}
+
+@media (min-width: 640px) {
+	.container-wide {
+		@apply max-w-[900px] px-6;
+	}
+}
+
+/* Service List */
+.service-list {
+	@apply bg-surface border-[0.5px] border-border rounded-2xl overflow-hidden;
+}
+
+.service-row {
+	@apply flex items-center gap-3 px-3.5 py-3 transition-colors;
+	min-height: 68px;
+}
+
+@media (min-width: 640px) {
+	.service-row {
+		@apply gap-3.5 px-4;
+	}
+}
+
+.service-row:not(:last-child) {
+	@apply border-b-[0.5px] border-divider;
+}
+
+/*
+	A filled row carries no background of its own. The accent wash that used to
+	sit here was a fourth colour layer on a row that already has a brand-coloured
+	logo, an accent earnings figure and a filled input, and over the surface it
+	mixed to a muddy green. The state is legible without it: the number is in the
+	box and the earning is beside it, which is where anyone looks anyway.
+
+	The rate line used to be brightened to #737373 on filled rows purely to
+	survive that wash. With the wash gone it matches every other row.
+*/
+
+.service-icon {
+	@apply w-[34px] h-[34px] rounded-[10px] overflow-hidden shrink-0;
+}
+
+.service-icon img {
+	@apply w-full h-full object-cover;
+}
+
+.service-info {
+	@apply flex-1 min-w-0;
+}
+
+.service-name {
+	@apply text-[15px] font-medium text-text leading-snug;
+	text-wrap: pretty;
+}
+
+/* Creator calculators put a full sentence in the rate line, so it has to wrap
+   onto a second line: leading-none collapsed those two lines into each other. */
+.service-rate {
+	@apply flex flex-wrap items-center gap-x-1.5 gap-y-1 mt-0.5 text-xs text-text-muted tabular-nums leading-snug;
+}
+
+.service-input {
+	@apply px-3 bg-black/30 border-[0.5px] border-transparent rounded-[10px] text-text text-[15px] font-medium tabular-nums text-right shrink-0 transition-all;
+	min-width: 76px;
+	height: 44px;
+}
+
+.service-input::placeholder {
+	@apply text-text-muted;
+}
+
+.service-input:focus {
+	@apply outline-none border-[0.5px] border-accent bg-black/40;
+}
+
+.service-earning {
+	@apply hidden sm:block text-sm font-semibold text-accent tabular-nums text-left whitespace-nowrap;
+}
+
+/* Pill */
+.pill {
+	@apply py-1 px-2 text-[10px] font-semibold text-text-muted bg-black/30 border-none rounded-md cursor-pointer transition-all;
+}
+
+.pill.active {
+	@apply text-accent bg-accent-dim;
+}
+
+/* Settings */
+.settings {
+	@apply flex flex-col gap-1 mt-3;
+}
+
+.setting-row {
+	@apply flex items-center justify-between gap-3;
+	min-height: 52px;
+}
+
+.setting-label {
+	@apply text-[14px] text-text-secondary;
+}
+
+.setting-input {
+	@apply w-[68px] px-2.5 bg-surface border-[0.5px] border-border rounded-[10px] text-text text-[15px] font-medium tabular-nums text-center;
+	height: 44px;
+	-moz-appearance: textfield;
+}
+
+.setting-input::-webkit-outer-spin-button,
+.setting-input::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}
+
+.setting-input:focus {
+	@apply outline-none border-[0.5px] border-accent;
+}
+
+.distrokid-pill {
+	@apply py-2 px-2.5 text-[10px] font-medium text-accent bg-accent-dim no-underline rounded-md transition-all leading-[19.5px];
+}
+
+/* Currency pills */
+.currency-pills {
+	@apply flex gap-2;
+}
+
+.currency-pill {
+	@apply inline-flex items-center justify-center px-3.5 text-[13px] font-medium text-text-muted bg-surface border-[0.5px] border-border rounded-[10px] whitespace-nowrap cursor-pointer transition-all;
+	min-height: 44px;
+	-webkit-tap-highlight-color: transparent;
+}
+
+.currency-pill.active {
+	@apply text-bg bg-accent border-[0.5px] border-accent;
+}
+
+/* Result */
+.result {
+	@apply text-center py-8 mt-4;
+}
+
+.result-label {
+	@apply text-[11px] font-medium uppercase tracking-wider text-text-muted mb-2;
+}
+
+.result-value {
+	@apply text-[44px] font-bold text-text tabular-nums transition-colors;
+}
+
+.result-value.has-value {
+	@apply text-accent;
+}
+
+.result-value .symbol {
+	@apply text-[26px] font-semibold opacity-70;
+}
+
+.result-meta {
+	@apply text-xs text-text-muted mt-4;
+}
+
+.result-cta {
+	@apply inline-block mt-4 text-xs text-text-muted no-underline transition-colors;
+}
+
+/* DistroKid Banner */
+.distro-banner {
+	@apply relative flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 p-4 sm:p-5 mt-8 bg-gradient-to-br from-accent/[0.12] to-accent/[0.04] border-[0.5px] border-accent/20 rounded-2xl no-underline transition-all text-center sm:text-left;
+}
+
+.distro-banner::before {
+	content: '';
+	@apply absolute inset-0 rounded-2xl pointer-events-none;
+	box-shadow: 0 0 30px 6px oklch(72% 0.15 163 / 0.08), 0 0 60px 15px oklch(72% 0.15 163 / 0.04);
+	animation: distro-glow 6s ease-in-out infinite;
+}
+
+@keyframes distro-glow {
+	0%, 100% {
+		box-shadow: 0 0 30px 6px oklch(72% 0.15 163 / 0.08), 0 0 60px 15px oklch(72% 0.15 163 / 0.04);
+	}
+	50% {
+		box-shadow: 0 0 35px 8px oklch(72% 0.15 163 / 0.11), 0 0 65px 18px oklch(72% 0.15 163 / 0.06);
+	}
+}
+
+.distro-banner-content {
+	@apply flex-1 min-w-0;
+}
+
+.distro-banner-headline {
+	@apply text-[15px] sm:text-base font-semibold text-text;
+}
+
+.distro-highlight {
+	@apply text-accent;
+}
+
+.distro-banner-sub {
+	@apply text-xs sm:text-[13px] text-text-secondary mt-0.5 sm:mt-1;
+}
+
+.distro-banner-sub strong {
+	@apply text-text font-medium;
+}
+
+.distro-banner-cta {
+	@apply w-full sm:w-auto py-2.5 px-4 text-sm font-semibold rounded-[10px] whitespace-nowrap transition-transform;
+	color: #fff;
+	background: linear-gradient(90deg, #1a8a5c, #157a50);
+	box-shadow: 0 2px 8px rgba(26, 138, 92, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Bottom Affiliate: Plugin Boutique (blue) */
+.affiliate-bottom {
+	@apply relative flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 p-4 sm:p-5 mt-8 rounded-2xl no-underline transition-all text-center sm:text-left;
+	background: linear-gradient(135deg, rgba(59, 130, 246, 0.12), rgba(59, 130, 246, 0.04));
+	border: 0.5px solid rgba(59, 130, 246, 0.2);
+}
+
+.affiliate-bottom::before {
+	content: '';
+	@apply absolute inset-0 rounded-2xl pointer-events-none;
+	box-shadow: 0 0 30px 6px rgba(59, 130, 246, 0.08), 0 0 60px 15px rgba(59, 130, 246, 0.04);
+}
+
+.affiliate-bottom-text {
+	@apply flex-1 min-w-0 flex flex-col gap-0.5;
+}
+
+.affiliate-bottom-title {
+	@apply text-[15px] sm:text-base font-semibold text-text;
+}
+
+.affiliate-bottom-sub {
+	@apply text-xs sm:text-[13px] text-text-secondary mt-0.5;
+}
+
+.affiliate-bottom-cta {
+	@apply w-full sm:w-auto py-2.5 px-4 text-sm font-semibold rounded-[10px] whitespace-nowrap transition-transform;
+	color: #fff;
+	background: linear-gradient(90deg, #3b82f6, #2563eb);
+	box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Student Banner: DistroKid (purple) */
+.student-banner {
+	@apply relative flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 p-4 sm:p-5 mt-8 rounded-2xl no-underline transition-all text-center sm:text-left;
+	background: linear-gradient(135deg, rgba(139, 92, 246, 0.10), rgba(139, 92, 246, 0.03));
+	border: 0.5px solid rgba(139, 92, 246, 0.18);
+}
+
+.student-banner::before {
+	content: '';
+	@apply absolute inset-0 rounded-2xl pointer-events-none;
+	box-shadow: 0 0 25px 5px rgba(139, 92, 246, 0.06), 0 0 50px 12px rgba(139, 92, 246, 0.03);
+}
+
+.student-banner-text {
+	@apply flex-1 min-w-0 flex flex-col gap-0.5;
+}
+
+.student-banner-title {
+	@apply text-[15px] sm:text-base font-semibold text-text;
+}
+
+.student-banner-title .student-icon {
+	@apply mr-1.5;
+	font-size: 17px;
+}
+
+.student-highlight {
+	color: #a78bfa;
+	font-weight: 700;
+}
+
+.student-banner-sub {
+	@apply text-xs sm:text-[13px] text-text-secondary mt-0.5;
+}
+
+.student-banner-cta {
+	@apply w-full sm:w-auto py-2.5 px-4 text-sm font-semibold rounded-[10px] whitespace-nowrap transition-transform;
+	color: #fff;
+	background: linear-gradient(90deg, #8b5cf6, #7c3aed);
+	box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Sponsor banner (base layout shared by all sponsor variants). */
+.sponsor-banner {
+	@apply relative block no-underline rounded-2xl mt-3 mb-3 px-4 py-3.5 sm:px-5 sm:py-4 transition-colors;
+}
+
+.sponsor-banner-top {
+	@apply flex items-center justify-between mb-2.5;
+}
+
+.sponsor-banner-logo-img {
+	@apply block flex-shrink-0;
+	height: 18px;
+	width: auto;
+	opacity: 0.95;
+}
+
+.sponsor-banner-tag {
+	@apply text-[10px] font-medium tracking-[0.14em] uppercase;
+	color: var(--text-muted);
+}
+
+.sponsor-banner-body {
+	@apply flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4;
+}
+
+.sponsor-banner-text {
+	@apply flex-1 min-w-0 text-center sm:text-left;
+}
+
+.sponsor-banner-headline {
+	@apply text-[15px] font-semibold leading-snug mb-1;
+	color: #efefef;
+	letter-spacing: -0.005em;
+}
+
+.sponsor-banner-meta {
+	@apply text-[12.5px] leading-snug;
+	color: #a3a3a3;
+}
+
+.sponsor-banner-cta {
+	@apply flex items-center justify-center gap-1 py-2.5 px-4 text-[13px] font-semibold rounded-lg whitespace-nowrap transition-transform flex-shrink-0 w-full sm:w-auto sm:py-2 sm:px-3.5;
+}
+
+/* Sponsor banner: Boost Collective variant (cream brand color #FFEEB8) */
+.sponsor-banner-boost {
+	background:
+		radial-gradient(130% 140% at 0% 0%, rgba(255, 238, 184, 0.10), transparent 55%),
+		radial-gradient(120% 130% at 100% 100%, rgba(255, 238, 184, 0.05), transparent 60%),
+		hsl(0, 0%, 10.2%);
+	border: 0.5px solid rgba(255, 238, 184, 0.22);
+	box-shadow: 0 0 26px -14px rgba(255, 238, 184, 0.22);
+}
+
+.sponsor-banner-logo-boost {
+	height: 20px;
+	/* The Boost wordmark file is black pixels; on the dark banner we need
+	   it to render white, so invert. The nav pill and dropdown row sit on
+	   the cream brand color, where the natural black is correct. */
+	filter: invert(1);
+}
+
+.sponsor-banner-cta-boost {
+	color: #1a1a1a;
+	background:
+		radial-gradient(70% 180% at 50% 50%, #FFF6D8 0%, transparent 75%),
+		linear-gradient(180deg, #FFEEB8, #DBC68A);
+	box-shadow:
+		inset 0 1px 0 rgba(255, 255, 255, 0.5),
+		inset 0 -1px 0 rgba(0, 0, 0, 0.10),
+		0 1px 3px rgba(0, 0, 0, 0.22);
+}
+
+/* RAISE */
+@media (hover: hover) {
+	.sponsor-banner-boost:hover {
+		border-color: var(--hover-edge);
+		transform: translateY(-1px);
+		box-shadow: var(--hover-shadow);
+	}
+}
+
+/* In sponsor-preview mode, hide competing affiliate banners.
+   Uses an html-level class set by an inline script in +layout.svelte BEFORE
+   paint, so the affiliates never flash in then disappear on the preview URL. */
+html.sponsor-preview-mode .distro-banner,
+html.sponsor-preview-mode .affiliate-bottom {
+	display: none !important;
+}
+
+/* Fade the sponsor banner and nav pill in on hydration so they don't pop
+   into existence after the rest of the page has settled. */
+@keyframes sponsor-fade-in {
+	from {
+		opacity: 0;
+		transform: translateY(-3px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.sponsor-banner {
+	animation: sponsor-fade-in 260ms ease-out;
+}
+
+.nav-groover-wrapper {
+	animation: sponsor-fade-in 260ms ease-out 60ms backwards;
+}
+
+/* Groover nav pill (sponsor mode only) */
+.nav-groover-wrapper {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	margin-left: 4px;
+}
+
+.nav-groover-pill {
+	@apply relative flex items-center px-3 py-1.5 rounded-full whitespace-nowrap;
+	background:
+		radial-gradient(80% 180% at 50% 50%, #ee5634 0%, transparent 75%),
+		linear-gradient(180deg, #b8391c, #8f2b14);
+	box-shadow:
+		inset 0 1px 0 rgba(255, 255, 255, 0.14),
+		inset 0 -1px 0 rgba(0, 0, 0, 0.18),
+		0 1px 3px rgba(0, 0, 0, 0.28);
+	text-decoration: none;
+	transition: transform 150ms ease, box-shadow 150ms ease;
+}
+
+.nav-groover-pill:hover {
+	transform: translateY(-1px);
+	box-shadow:
+		0 1px 0 0 rgba(255, 255, 255, 0.22) inset,
+		var(--hover-shadow);
+}
+
+.nav-groover-logo {
+	height: 18px;
+	width: auto;
+	display: block;
+}
+
+.nav-groover-tooltip {
+	display: block;
+	text-decoration: none;
+	position: absolute;
+	top: calc(100% + 10px);
+	right: 0;
+	width: 260px;
+	padding: 12px 14px 14px;
+	background:
+		radial-gradient(130% 140% at 100% 0%, rgba(255, 92, 57, 0.10), transparent 55%),
+		hsl(0, 0%, 14%);
+	border: 0.5px solid rgba(255, 92, 57, 0.35);
+	border-radius: 12px;
+	box-shadow:
+		0 14px 40px -10px rgba(0, 0, 0, 0.7),
+		0 0 32px -8px rgba(255, 92, 57, 0.32);
+	opacity: 0;
+	pointer-events: none;
+	transform: translateY(-4px);
+	transition: opacity 180ms ease, transform 180ms ease;
+	z-index: 100;
+	text-align: left;
+}
+
+/* Invisible bridge that fills the 10px gap between the pill and the
+   tooltip card so the mouse can travel from the pill to the CTA without
+   leaving the wrapper's hover zone. */
+.nav-groover-tooltip::before {
+	content: '';
+	position: absolute;
+	top: -10px;
+	left: 0;
+	right: 0;
+	height: 10px;
+	pointer-events: inherit;
+}
+
+.nav-groover-wrapper:hover .nav-groover-tooltip,
+.nav-groover-wrapper:focus-within .nav-groover-tooltip {
+	opacity: 1;
+	transform: translateY(0);
+	pointer-events: auto;
+}
+
+.nav-groover-tooltip-tag {
+	font-size: 9.5px;
+	font-weight: 600;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: var(--text-muted);
+	margin-bottom: 8px;
+}
+
+.nav-groover-tooltip-title {
+	font-size: 13.5px;
+	font-weight: 600;
+	color: #efefef;
+	line-height: 1.35;
+	margin-bottom: 4px;
+}
+
+.nav-groover-tooltip-sub {
+	font-size: 12px;
+	color: #a3a3a3;
+	line-height: 1.4;
+	margin-bottom: 10px;
+}
+
+.nav-groover-tooltip-cta {
+	font-size: 12px;
+	font-weight: 600;
+	color: #FF5C39;
+}
+
+/* Boost Collective overrides for the desktop nav pill + tooltip
+   Brand color is a pale cream (#FFEEB8) so the wordmark on the pill needs
+   to render dark. Achieved with a filter on the white logo PNG. */
+.nav-boost-pill {
+	background:
+		radial-gradient(80% 180% at 50% 50%, #FFF6D8 0%, transparent 75%),
+		linear-gradient(180deg, #FFEEB8, #DBC68A) !important;
+	box-shadow:
+		inset 0 1px 0 rgba(255, 255, 255, 0.55),
+		inset 0 -1px 0 rgba(0, 0, 0, 0.10),
+		0 1px 3px rgba(0, 0, 0, 0.22) !important;
+}
+
+.nav-boost-logo {
+	height: 16px;
+	filter: brightness(0);
+}
+
+.nav-boost-tooltip {
+	border-color: rgba(255, 238, 184, 0.4) !important;
+	background:
+		radial-gradient(130% 140% at 100% 0%, rgba(255, 238, 184, 0.10), transparent 55%),
+		hsl(0, 0%, 14%) !important;
+	box-shadow:
+		0 14px 40px -10px rgba(0, 0, 0, 0.7),
+		0 0 32px -8px rgba(255, 238, 184, 0.30) !important;
+}
+
+.nav-boost-tooltip-cta {
+	color: #FFEEB8 !important;
+}
+
+/* Affiliate */
+.affiliate {
+	@apply flex items-center gap-3.5 p-4 mt-6 bg-gradient-to-br from-accent/[0.08] to-accent/[0.02] border-[0.5px] border-accent/15 rounded-[14px] no-underline transition-all;
+}
+
+.affiliate-content {
+	@apply flex-1 min-w-0;
+}
+
+.affiliate-badge {
+	@apply inline-block py-0.5 px-1.5 text-[9px] font-bold uppercase tracking-wide text-bg bg-accent rounded mb-1;
+}
+
+.affiliate-title {
+	@apply text-sm font-semibold text-text;
+}
+
+.affiliate-subtitle {
+	@apply text-xs text-text-secondary mt-0.5;
+}
+
+.affiliate-cta {
+	@apply flex items-center gap-1 py-2.5 px-3.5 text-xs font-semibold text-bg bg-accent rounded-lg whitespace-nowrap;
+}
+
+/* Expand button */
+.expand-btn {
+	@apply flex items-center justify-center gap-1.5 w-full text-[12px] font-medium text-text-muted bg-transparent border-none border-t-[0.5px] border-divider cursor-pointer transition-colors;
+	min-height: 46px;
+	-webkit-tap-highlight-color: transparent;
+}
+
+/* FAQ */
+.faq-list {
+	@apply mt-14;
+}
+
+.faq-title {
+	@apply text-[13px] font-semibold uppercase tracking-wider text-text-muted;
+	margin-top: 0;
+}
+
+.faq-container {
+	@apply bg-surface border-[0.5px] border-border rounded-2xl overflow-hidden;
+}
+
+.faq-item {
+	@apply block w-full text-left bg-transparent border-none cursor-pointer transition-colors duration-200;
+}
+
+.faq-item:not(:last-child) {
+	@apply border-b-[0.5px] border-divider;
+}
+
+.faq-question {
+	@apply flex items-start justify-between gap-4 w-full py-4 px-4 text-sm font-medium text-text-secondary leading-snug transition-all duration-200;
+	min-height: 52px;
+	text-wrap: pretty;
+}
+
+.faq-item.open .faq-question {
+	@apply text-text;
+}
+
+.faq-icon {
+	@apply text-base text-text-muted transition-all duration-300 shrink-0;
+	margin-top: 1px;
+}
+
+.faq-item.open .faq-icon {
+	@apply rotate-45 text-accent;
+}
+
+/* Collapsed with grid rows rather than by unmounting, so the answer text stays
+   in the served HTML and remains crawlable. 0fr to 1fr animates the height
+   without needing a measured pixel value. */
+.faq-answer-wrap {
+	display: grid;
+	grid-template-rows: 0fr;
+	transition: grid-template-rows 0.2s ease;
+}
+
+.faq-answer-wrap.open {
+	grid-template-rows: 1fr;
+}
+
+.faq-answer-wrap > .faq-answer {
+	overflow: hidden;
+	min-height: 0;
+}
+
+.faq-answer {
+	@apply text-sm leading-relaxed text-text-secondary px-4;
+}
+
+.faq-answer-wrap.open > .faq-answer {
+	@apply pb-4;
+}
+
+.faq-link {
+	@apply text-accent underline underline-offset-2 transition-opacity;
+}
+
+/* Link */
+.link {
+	@apply inline-flex items-center gap-1.5 py-2.5 px-4 text-[13px] font-medium text-text-secondary bg-transparent border-[0.5px] border-border rounded-[10px] no-underline transition-all;
+}
+
+/* Back link - hidden on desktop where floating nav is always visible */
+@media (min-width: 640px) {
+	.back-link-mobile {
+		@apply hidden;
+	}
+}
+
+/* Bottom Nav: Shared */
+.nav-bottom {
+	@apply fixed z-50 flex flex-col items-end transition-all;
+	bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+	left: 16px;
+	right: 16px;
+	width: auto;
+	/* This container is full width and sits above the backdrop, so its empty
+	   area to the left of the panel was eating the taps meant to close the menu.
+	   Only the visible surfaces take pointer events. */
+	pointer-events: none;
+}
+
+.nav-bottom-panel,
+.nav-bottom-pill {
+	pointer-events: auto;
+}
+
+.nav-bottom-hidden .nav-bottom-panel,
+.nav-bottom-hidden .nav-bottom-pill {
+	pointer-events: none;
+}
+
+.nav-bottom-hidden {
+	translate: 0 80px;
+	opacity: 0;
+	pointer-events: none;
+}
+
+.nav-bottom-pills-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	width: 100%;
+}
+
+.nav-bottom-pills-row > .nav-bottom-pill {
+	margin-left: auto;
+}
+
+.nav-bottom-pill {
+	@apply relative flex items-center gap-0.5 py-1.5 px-2 rounded-full;
+	-webkit-backdrop-filter: blur(6px);
+	backdrop-filter: blur(6px);
+	background: hsla(0, 0%, 9%, 0.75);
+	border: none;
+	outline: 1px solid hsla(0, 0%, 100%, 0.20);
+	box-shadow:
+		0 4px 24px rgba(0, 0, 0, 0.5),
+		0 1px 4px rgba(0, 0, 0, 0.3),
+		inset 0 0.5px 0 hsla(0, 0%, 100%, 0.06);
+}
+
+/* Boost Collective row inside the mobile dropdown (sponsor mode only) */
+.nav-bottom-panel-link-boost {
+	@apply flex items-center justify-center mt-1;
+	background:
+		radial-gradient(80% 180% at 50% 50%, #FFF6D8 0%, transparent 75%),
+		linear-gradient(180deg, #FFEEB8, #DBC68A);
+	box-shadow:
+		inset 0 1px 0 rgba(255, 255, 255, 0.55),
+		inset 0 -1px 0 rgba(0, 0, 0, 0.10),
+		0 1px 3px rgba(0, 0, 0, 0.22);
+}
+
+.nav-bottom-panel-boost-logo {
+	height: 14px;
+	width: auto;
+	display: block;
+	filter: brightness(0);
+}
+
+.nav-bottom-logo-link {
+	flex-shrink: 0;
+	line-height: 0;
+	padding: 2px;
+	border-radius: 9999px;
+	transition: background-color 0.15s ease;
+}
+
+/*
+	Bigger than the desktop mark on purpose. Down here the logo is the whole brand
+	presence and the only route home, sitting in a two-item pill; up there it is
+	one element beside three dropdowns. The 8px inset keeps the artwork at roughly
+	the same size as before while the badge it sits in grows, and 40px plus the
+	link's 2px lands the circle at 44px, matching the toggle beside it exactly.
+*/
+.nav-bottom-logo {
+	height: 40px;
+	width: 40px;
+	object-fit: cover;
+	border-radius: 4px;
+	padding: 8px;
+}
+
+.nav-backdrop {
+	@apply fixed inset-0 z-40 border-none cursor-default;
+	background: rgba(0, 0, 0, 0.4);
+}
+
+/* Bottom Nav: Mobile */
+.nav-mobile {
+	@apply flex;
+}
+
+.nav-bottom-toggle {
+	@apply flex items-center justify-center w-11 h-11 rounded-full text-text-secondary cursor-pointer transition-colors;
+	background: none;
+	border: none;
+	-webkit-tap-highlight-color: transparent;
+}
+
+.nav-bottom-toggle svg {
+	pointer-events: none;
+}
+
+.nav-bottom-panel {
+	@apply rounded-3xl;
+	-webkit-backdrop-filter: blur(40px) saturate(180%);
+	backdrop-filter: blur(40px) saturate(180%);
+	/* Opaque. At 0.7 alpha the page showed through the menu, and with the
+	   calculator groups inside it the accent colours beneath made unrelated rows
+	   look selected. */
+	background: hsl(0, 0%, 10%);
+	border: 0.5px solid hsla(0, 0%, 100%, 0.15);
+	box-shadow:
+		0 8px 32px rgba(0, 0, 0, 0.45),
+		0 2px 8px rgba(0, 0, 0, 0.25),
+		inset 0 0.5px 0 hsla(0, 0%, 100%, 0.08);
+	width: 232px;
+	margin-bottom: 8px;
+	padding: 6px;
+	transform-origin: bottom right;
+}
+
+.nav-bottom-panel-link {
+	@apply flex items-center justify-between px-4 text-[14px] text-text-secondary no-underline rounded-[18px] transition-all;
+	min-height: 44px;
+}
+
+.nav-bottom-panel-link-active {
+	@apply text-accent bg-accent-dim;
+}
+
+.nav-bottom-panel-link-active::after {
+	content: '';
+	width: 6px;
+	height: 6px;
+	border-radius: 9999px;
+	background: currentColor;
+	box-shadow: 0 0 8px currentColor;
+}
+
+/* Top Nav: Desktop */
+.nav-desktop {
+	@apply hidden;
+}
+
+.nav-top {
+	@apply fixed flex items-center gap-0.5 py-1.5;
+	padding-left: 7px;
+	padding-right: 7px;
+	top: 16px;
+	z-index: 50;
+	-webkit-backdrop-filter: blur(22px) saturate(180%);
+	backdrop-filter: blur(22px) saturate(180%);
+	background: hsla(0, 0%, 12%, 0.55);
+	border: 0.5px solid hsla(0, 0%, 100%, 0.15);
+	border-radius: 9999px;
+	box-shadow:
+		0 1px 3px rgba(0, 0, 0, 0.15),
+		inset 0 0.5px 0 hsla(0, 0%, 100%, 0.08);
+}
+
+.nav-top-left {
+	left: 20px;
+	/* The logo carries its own padding now that it is a real button, so the
+	   container only keeps enough to inset that button from the pill edge. */
+	padding-left: 6px;
+}
+
+.nav-top-right {
+	right: 20px;
+}
+
+/*
+	Evenly padded so its hover and active fills are a circle around a square
+	mark. A capsule here read as a second button competing with the one beside
+	it; a circle reads as the mark itself lighting up.
+*/
+.nav-top-logo-link {
+	@apply flex items-center no-underline flex-shrink-0 rounded-full transition-colors;
+	padding: 2px;
+	line-height: 0;
+}
+
+.nav-top-logo {
+	height: 26px;
+	width: 26px;
+	object-fit: cover;
+	border-radius: 4px;
+	padding: 2px;
+}
+
+.nav-top-link {
+	@apply relative flex items-center px-3 py-1.5 text-[13px] text-text-secondary no-underline rounded-full transition-colors whitespace-nowrap;
+}
+
+.nav-top-link-active {
+	color: #fff;
+	background: rgba(255, 255, 255, 0.08);
+}
+
+.nav-top-dropdown {
+	@apply relative;
+}
+
+.nav-top-dropdown-trigger {
+	@apply cursor-default select-none;
+	gap: 2px;
+	padding-right: 10px;
+}
+
+.nav-top-dropdown-menu {
+	@apply absolute left-0 py-1.5 rounded-xl opacity-0 pointer-events-none transition-all;
+	-webkit-backdrop-filter: blur(40px) saturate(180%);
+	backdrop-filter: blur(40px) saturate(180%);
+	background: hsla(0, 0%, 12%, 0.6);
+	border: 0.5px solid hsla(0, 0%, 100%, 0.15);
+	box-shadow:
+		0 2px 8px rgba(0, 0, 0, 0.2),
+		inset 0 0.5px 0 hsla(0, 0%, 100%, 0.08);
+	min-width: 160px;
+	top: calc(100% + 8px);
+	transform: translateY(-4px);
+}
+
+.nav-top-dropdown-menu::after {
+	content: '';
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: -12px;
+	height: 12px;
+}
+
+.nav-top-dropdown:hover .nav-top-dropdown-menu {
+	@apply opacity-100 pointer-events-auto;
+	transform: translateY(0);
+}
+
+.nav-top-dropdown-item {
+	@apply block px-4 py-2 text-[13px] text-text-secondary no-underline transition-colors whitespace-nowrap;
+}
+
+.nav-top-dropdown-item-active {
+	@apply text-text;
+}
+
+/* One calculator family per menu, so each is a short single column sitting
+   under its own trigger. Fully opaque: at 0.6 alpha the page beneath showed
+   straight through the labels. */
+.nav-calc-menu {
+	display: flex;
+	flex-direction: column;
+	gap: 1px;
+	padding: 6px;
+	min-width: 194px;
+	left: 0;
+	transform: translateY(-4px);
+	background: hsl(0, 0%, 9%);
+	border-color: hsla(0, 0%, 100%, 0.12);
+	box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+}
+
+.nav-calc-dropdown:hover .nav-calc-menu {
+	transform: translateY(0);
+}
+
+.nav-calc-item {
+	display: block;
+	padding: 6px 8px;
+	border-radius: 8px;
+	text-decoration: none;
+	transition: background 0.15s;
+}
+
+.nav-calc-item-label {
+	display: block;
+	font-size: 13px;
+	color: var(--text-secondary);
+	white-space: nowrap;
+}
+
+.nav-calc-item-note {
+	display: block;
+	font-size: 11px;
+	color: var(--text-muted);
+	margin-top: 1px;
+	white-space: nowrap;
+}
+
+/* Active calculator: accent text plus a tinted row, so it is unmistakable in a
+   panel of fifteen links rather than a shade of green you have to hunt for. */
+.nav-calc-item-active {
+	background: var(--accent-dim);
+}
+
+.nav-calc-item-active .nav-calc-item-label {
+	color: var(--accent);
+	font-weight: 600;
+}
+
+.nav-calc-item-active .nav-calc-item-note {
+	color: hsla(160, 60%, 70%, 0.7);
+}
+
+/* The logo carries the homepage state now that the "Calculator" link is gone.
+   Neutral fill, matching every other active item: an accent tint behind an
+   accent mark muddied both. */
+.nav-top-logo-link-active,
+.nav-bottom-logo-link-active {
+	background: rgba(255, 255, 255, 0.06);
+}
+
+@media (hover: hover) {
+	/* FILL */
+	.nav-top-logo-link:hover,
+	.nav-bottom-logo-link:hover,
+	.nav-calc-item:hover {
+		background: var(--hover-fill);
+	}
+
+	.nav-top-logo-link-active:hover,
+	.nav-bottom-logo-link-active:hover {
+		background: var(--hover-fill-strong);
+	}
+
+	.nav-calc-item:hover .nav-calc-item-label {
+		color: var(--text);
+	}
+}
+
+/* Mobile: one collapsible row per group inside the existing bottom panel. */
+.nav-calc-mobile-trigger {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	width: 100%;
+	gap: 8px;
+	padding: 10px 14px;
+	background: none;
+	border: none;
+	font-size: 11px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	color: var(--text-muted);
+	cursor: pointer;
+	-webkit-tap-highlight-color: transparent;
+}
+
+.nav-calc-mobile-trigger svg {
+	flex-shrink: 0;
+}
+
+.nav-calc-mobile-trigger-open {
+	color: var(--text);
+}
+
+.nav-calc-mobile-trigger-open svg {
+	transform: rotate(180deg);
+}
+
+.nav-calc-mobile-item {
+	padding-left: 26px;
+}
+
+.nav-calc-mobile-rule {
+	height: 0.5px;
+	background: hsla(0, 0%, 100%, 0.1);
+	margin: 6px 12px;
+}
+
+@media (min-width: 768px) {
+	.nav-mobile {
+		@apply hidden;
+	}
+
+	.nav-desktop {
+		@apply block;
+	}
+}
+
+@media (hover: hover) {
+	/* FILL. The panel link used to take an accent fill, which made every row you
+	   dragged a thumb past look like the page you were on. */
+	.nav-bottom-toggle:hover,
+	.nav-bottom-panel-link:hover,
+	.nav-top-link:hover,
+	.nav-top-dropdown-item:hover {
+		@apply text-text;
+		background: var(--hover-fill);
+	}
+}
+
+/* Footer */
+.footer {
+	@apply text-center pt-8 mt-8 border-t-[0.5px] border-divider;
+	padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+}
+
+@media (min-width: 768px) {
+	.footer {
+		padding-bottom: 32px;
+	}
+}
+
+.footer p {
+	@apply text-xs text-text-muted;
+	line-height: 2.4;
+}
+
+/* Inline-block with vertical padding so each link clears a thumb without
+   breaking the dot-separated single-line layout. */
+.footer-link {
+	@apply inline-block py-1.5 text-text no-underline transition-colors;
+}
+
+.footer-link-icon {
+	@apply inline-flex items-center gap-1;
+}
+
+.footer-link.accent {
+	@apply text-accent;
+}
+
+.footer-dot {
+	@apply mx-2;
+}
+
+.footer-copy {
+	@apply mt-2;
+}
+
+/* Page Content (legal/info pages) */
+.page-content {
+	@apply bg-surface border-[0.5px] border-border rounded-2xl text-text-secondary text-sm leading-relaxed;
+	padding: 1.5rem;
+	text-wrap: pretty;
+}
+
+.page-content h2 {
+	@apply text-text font-semibold;
+	font-size: 1.125rem;
+	margin-top: 1.5rem;
+	margin-bottom: 0.75rem;
+}
+
+.page-content h2:first-child {
+	margin-top: 0;
+}
+
+.page-content p {
+	margin-bottom: 1rem;
+}
+
+.page-content ul {
+	margin-bottom: 1rem;
+	padding-left: 1.5rem;
+	list-style: disc;
+}
+
+.page-content li {
+	margin-bottom: 0.5rem;
+}
+
+.page-content a {
+	@apply text-accent underline underline-offset-2;
+}
+
+/* Editorial Section */
+.editorial-section {
+	@apply flex flex-col gap-8 mt-14;
+}
+
+.editorial-card {
+	@apply text-text-secondary text-sm leading-relaxed;
+	text-wrap: pretty;
+}
+
+.editorial-card h2 {
+	@apply text-text font-semibold;
+	font-size: 1.125rem;
+	margin-top: 0;
+	margin-bottom: 1rem;
+}
+
+.editorial-card p {
+	margin-bottom: 1rem;
+}
+
+.editorial-card p:last-child {
+	margin-bottom: 0;
+}
+
+.editorial-card ul {
+	margin-bottom: 1rem;
+	padding-left: 1.5rem;
+	list-style: disc;
+}
+
+.editorial-card ul:last-child {
+	margin-bottom: 0;
+}
+
+.editorial-card li {
+	margin-bottom: 0.5rem;
+}
+
+.editorial-card li:last-child {
+	margin-bottom: 0;
+}
+
+.editorial-card a {
+	@apply text-accent underline underline-offset-2;
+}
+
+/* Home Tools Section */
+.home-tools-section {
+	@apply mt-14;
+}
+
+.home-tools-title {
+	@apply mb-4;
+}
+
+/* One column at every width. Two columns halved the room each card had, so the
+   descriptions wrapped to three lines on desktop while the page's own reading
+   column sat half empty beside them. */
+.home-tools-grid {
+	@apply grid grid-cols-1 gap-3;
+}
+
+.home-tool-card {
+	@apply flex items-center gap-4 bg-surface border-[0.5px] border-border rounded-xl px-5 py-4 no-underline transition-all;
+}
+
+.home-tool-card-mark {
+	@apply flex items-center justify-center shrink-0;
+	width: 44px;
+	height: 44px;
+}
+
+/* Distributor mark: three overlapping brand-color dots */
+.home-tool-card-mark-distros {
+	position: relative;
+}
+
+.home-tool-card-mark-distros img {
+	position: absolute;
+	width: 22px;
+	height: 22px;
+	border-radius: 999px;
+	object-fit: cover;
+	display: block;
+	box-shadow: 0 0 0 2px var(--surface);
+	top: 50%;
+	transform: translateY(-50%);
+}
+
+.home-tool-card-mark-distros img:nth-child(1) {
+	left: 0;
+	z-index: 3;
+}
+
+.home-tool-card-mark-distros img:nth-child(2) {
+	left: 11px;
+	z-index: 2;
+}
+
+.home-tool-card-mark-distros img:nth-child(3) {
+	left: 22px;
+	z-index: 1;
+}
+
+/* Advance mark: a banknote, for the one tool that pays out rather than counts */
+.home-tool-card-mark-advance {
+	color: #fbbf24;
+}
+
+.home-tool-card-mark-advance svg {
+	width: 36px;
+	height: 36px;
+}
+
+/* Target mark: concentric bullseye */
+.home-tool-card-mark-target {
+	@apply text-accent;
+}
+
+.home-tool-card-mark-target svg {
+	width: 36px;
+	height: 36px;
+}
+
+/* YouTube mark: play button */
+.home-tool-card-mark-youtube {
+	color: #e0453a;
+}
+
+.home-tool-card-mark-youtube svg {
+	width: 36px;
+	height: 36px;
+}
+
+/* TikTok mark: note glyph, colours baked into the SVG */
+.home-tool-card-mark-tiktok svg {
+	width: 34px;
+	height: 34px;
+}
+
+.home-tool-card-text {
+	@apply flex flex-col min-w-0 flex-1;
+}
+
+.home-tool-card-title {
+	@apply text-[14px] font-semibold text-text leading-snug;
+}
+
+.home-tool-card-desc {
+	@apply text-[13px] text-text-secondary leading-relaxed mt-1;
+	text-wrap: pretty;
+}
+
+@media (hover: hover) {
+	/* RAISE */
+	.home-tool-card:hover {
+		border-color: var(--hover-edge);
+		transform: translateY(-1px);
+		box-shadow: var(--hover-shadow);
+	}
+}
+
+/* Home Blog Preview */
+.home-blog-section {
+	@apply mt-14;
+}
+
+.home-blog-header {
+	@apply flex items-baseline justify-between mb-4;
+}
+
+.home-blog-view-all {
+	@apply flex items-center gap-1 text-[13px] font-medium text-text-muted no-underline transition-colors;
+}
+
+.home-blog-grid {
+	@apply grid grid-cols-1 gap-3;
+}
+
+@media (min-width: 640px) {
+	.home-blog-grid {
+		@apply grid-cols-2;
+	}
+}
+
+.home-blog-card {
+	@apply flex flex-col bg-surface border-[0.5px] border-border rounded-xl px-5 py-4 no-underline transition-all;
+}
+
+/* Featured pin: spans both grid columns for extra prominence */
+.home-blog-card-featured {
+	@apply px-6 py-5;
+}
+
+@media (min-width: 640px) {
+	.home-blog-card-featured {
+		@apply col-span-2;
+	}
+}
+
+.home-blog-card-featured-label {
+	@apply text-[10px] font-semibold uppercase tracking-widest text-text-muted;
+}
+
+.home-blog-card-featured-title {
+	@apply text-[17px];
+	-webkit-line-clamp: 2;
+}
+
+.home-blog-card-featured-excerpt {
+	-webkit-line-clamp: 3;
+}
+
+.home-blog-card-featured-readtime {
+	@apply mt-2.5;
+}
+
+.home-blog-card-top {
+	@apply flex items-center justify-between gap-3 mb-2.5;
+}
+
+.home-blog-card-category {
+	@apply text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full;
+}
+
+.home-blog-card-readtime {
+	@apply text-[11px] text-text-muted;
+}
+
+.home-blog-card-title {
+	@apply text-[14px] font-semibold text-text leading-snug;
+	text-wrap: pretty;
+	display: -webkit-box;
+	-webkit-line-clamp: 3;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+
+.home-blog-card-excerpt {
+	@apply text-[13px] text-text-secondary leading-relaxed mt-auto pt-1.5;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+
+/* Blog Filters */
+.blog-filters {
+	@apply flex gap-2 mt-6 overflow-x-auto;
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+}
+
+.blog-filters::-webkit-scrollbar {
+	display: none;
+}
+
+.blog-filter-btn {
+	@apply flex items-center gap-1.5 py-1.5 px-3 text-[12px] font-medium text-text-muted rounded-lg border-[0.5px] border-transparent transition-all cursor-pointer whitespace-nowrap;
+	background: none;
+}
+
+.blog-filter-btn:hover {
+	@apply text-text-secondary;
+}
+
+.blog-filter-btn.active {
+	@apply text-text bg-surface border-[0.5px] border-border;
+}
+
+.blog-filter-dot {
+	@apply w-1.5 h-1.5 rounded-full shrink-0;
+}
+
+/* Blog Featured Card */
+.blog-featured {
+	@apply block no-underline mt-4;
+}
+
+.blog-featured-inner {
+	@apply relative bg-surface border-[0.5px] border-border rounded-2xl p-6 transition-all overflow-hidden;
+}
+
+/* RAISE */
+.blog-featured:hover .blog-featured-inner {
+	border-color: var(--hover-edge);
+	transform: translateY(-1px);
+	box-shadow: var(--hover-shadow);
+}
+
+.blog-featured-content {
+	@apply relative z-10;
+}
+
+.blog-featured-title {
+	@apply text-[20px] font-bold text-text leading-tight mt-3 mb-3;
+	text-wrap: pretty;
+}
+
+@media (min-width: 640px) {
+	.blog-featured-title {
+		@apply text-[24px];
+	}
+}
+
+.blog-featured-excerpt {
+	@apply text-[14px] text-text-secondary leading-relaxed mb-4;
+	text-wrap: pretty;
+}
+
+.blog-featured-aside {
+	@apply absolute top-5 right-5;
+}
+
+.blog-featured-label {
+	@apply text-[10px] font-semibold uppercase tracking-widest text-text-muted;
+}
+
+/* Blog Grid */
+.blog-grid {
+	@apply flex flex-col gap-3 mt-3;
+}
+
+@media (min-width: 640px) {
+	.blog-grid {
+		@apply grid grid-cols-2 gap-4;
+	}
+}
+
+.blog-card {
+	@apply block bg-surface border-[0.5px] border-border rounded-2xl p-5 no-underline transition-all;
+}
+
+/* RAISE */
+.blog-card:hover {
+	border-color: var(--hover-edge);
+	transform: translateY(-1px);
+	box-shadow: var(--hover-shadow);
+}
+
+.blog-card-top {
+	@apply flex items-center justify-between mb-3;
+}
+
+.blog-card-category {
+	@apply inline-block py-0.5 px-2 text-[10px] font-semibold uppercase tracking-wider rounded-md;
+}
+
+.blog-card-date {
+	@apply text-[11px] text-text-muted;
+}
+
+.blog-card-title {
+	@apply text-[15px] font-semibold text-text leading-snug mb-2;
+	text-wrap: pretty;
+}
+
+.blog-card-excerpt {
+	@apply text-[13px] text-text-secondary leading-relaxed mb-3;
+	text-wrap: pretty;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+
+.blog-card-meta {
+	@apply text-[11px] text-text-muted;
+}
+
+/* Reading Progress Bar */
+.blog-progress {
+	@apply fixed top-0 left-0 z-[60] pointer-events-none;
+	width: var(--progress, 0%);
+	height: 2px;
+	background: var(--color-accent);
+	transition: width 0.1s linear;
+}
+
+/* Blog Post */
+.blog-back {
+	@apply inline-flex items-center gap-1.5 text-[13px] text-text-muted no-underline transition-all mt-6;
+	padding: 6px 11px 6px 8px;
+	border-radius: 999px;
+	border: 0.5px solid transparent;
+}
+
+.blog-back:hover {
+	background: var(--hover-fill);
+}
+
+.blog-back svg {
+	transition: transform 0.2s ease;
+}
+
+.blog-back:hover svg {
+	transform: translateX(-2px);
+}
+
+.blog-header {
+	position: relative;
+	@apply pt-8 pb-8;
+	max-width: 720px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+/* Soft ambient glow behind header in category color */
+.blog-header::before {
+	content: '';
+	position: absolute;
+	top: -40px;
+	left: 50%;
+	transform: translateX(-50%);
+	width: min(640px, 90%);
+	height: 280px;
+	background: radial-gradient(ellipse at top, var(--cat-color-soft, hsla(168, 85%, 247%, 0.06)) 0%, transparent 70%);
+	pointer-events: none;
+	z-index: -1;
+	filter: blur(20px);
+	opacity: 0.7;
+}
+
+.blog-header-meta {
+	@apply flex items-center gap-2 mb-4;
+}
+
+.blog-header-dot {
+	@apply w-1 h-1 rounded-full bg-text-muted shrink-0;
+}
+
+.blog-header-date {
+	@apply text-[13px] text-text-muted;
+}
+
+.blog-category {
+	@apply inline-block py-1 px-2.5 text-[10px] font-semibold uppercase tracking-wider rounded-md border-[0.5px];
+}
+
+.blog-title {
+	@apply text-text leading-tight;
+	font-size: 26px;
+	font-weight: 650;
+	text-wrap: pretty;
+	margin: 0;
+	letter-spacing: -0.03em;
+}
+
+@media (min-width: 640px) {
+	.blog-title {
+		font-size: 34px;
+	}
+}
+
+.blog-header-bottom {
+	@apply flex items-center gap-2 mt-5;
+}
+
+.blog-header-author {
+	@apply text-[13px] text-text-secondary;
+	font-weight: 450;
+}
+
+.blog-header-readtime {
+	@apply text-[13px] text-text-muted;
+	font-weight: 350;
+}
+
+.blog-meta {
+	@apply text-sm text-text-muted mt-3;
+}
+
+.blog-divider {
+	@apply border-0 border-t-[0.5px] border-divider;
+	margin: 2rem 0;
+}
+
+/* Blog post content: editorial long-form reading */
+.blog-content {
+	@apply text-text-secondary;
+	font-size: 0.9375rem;
+	font-weight: 350;
+	line-height: 1.85;
+	text-wrap: pretty;
+	padding-top: 1.5rem;
+	max-width: 720px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+/* Drop cap on first paragraph: tinted with category color */
+.blog-content > p:first-of-type::first-letter {
+	float: left;
+	font-size: 3.4em;
+	line-height: 0.82;
+	font-weight: 650;
+	color: var(--cat-color, var(--color-text));
+	margin-right: 0.1em;
+	margin-top: 0.06em;
+	letter-spacing: -0.02em;
+}
+
+.blog-content h2 {
+	@apply text-text;
+	position: relative;
+	font-size: 1.5rem;
+	font-weight: 600;
+	letter-spacing: -0.02em;
+	margin-top: 3.25rem;
+	margin-bottom: 1rem;
+	text-wrap: pretty;
+}
+
+/* Tiny accent mark before each H2: category-tinted */
+.blog-content h2::before {
+	content: '';
+	display: block;
+	width: 22px;
+	height: 2px;
+	border-radius: 2px;
+	background: var(--cat-color, var(--color-accent));
+	opacity: 0.7;
+	margin-bottom: 0.85rem;
+}
+
+.blog-content h2:first-child {
+	margin-top: 0;
+}
+
+.blog-content h3 {
+	@apply text-text;
+	font-size: 1.1rem;
+	font-weight: 550;
+	letter-spacing: -0.01em;
+	margin-top: 2.25rem;
+	margin-bottom: 0.75rem;
+}
+
+.blog-content p {
+	margin-bottom: 1.375rem;
+}
+
+.blog-content p:last-child {
+	margin-bottom: 0;
+}
+
+.blog-content ul, .blog-content ol {
+	margin-bottom: 1.375rem;
+	padding-left: 1.5rem;
+}
+
+.blog-content ul {
+	list-style: none;
+}
+
+.blog-content ul li {
+	position: relative;
+	padding-left: 0.25rem;
+}
+
+.blog-content ul li::before {
+	content: '';
+	position: absolute;
+	left: -1rem;
+	top: 0.65em;
+	width: 4px;
+	height: 4px;
+	border-radius: 50%;
+	background: var(--color-text-muted);
+}
+
+.blog-content ol {
+	list-style: none;
+	counter-reset: blog-ol;
+}
+
+.blog-content ol li {
+	counter-increment: blog-ol;
+	position: relative;
+	padding-left: 0.25rem;
+}
+
+.blog-content ol li::before {
+	content: counter(blog-ol);
+	position: absolute;
+	left: -1.5rem;
+	top: 0;
+	font-size: 0.75rem;
+	font-weight: 550;
+	color: var(--color-text-muted);
+}
+
+.blog-content li {
+	margin-bottom: 0.875rem;
+	line-height: 1.8;
+}
+
+.blog-content a {
+	@apply text-accent underline underline-offset-2;
+}
+
+/* Sponsor banner embedded in article HTML: don't inherit prose link styling. */
+.blog-content a.sponsor-banner {
+	@apply no-underline;
+	color: inherit;
+}
+
+.blog-content strong {
+	@apply text-text;
+}
+
+/* Blog Content: Callout Boxes */
+.blog-content .callout {
+	@apply rounded-xl my-8 px-5 py-4;
+	background: hsla(0, 0%, 100%, 0.03);
+	border: 0.5px solid hsla(0, 0%, 100%, 0.08);
+}
+
+.blog-content .callout-label {
+	@apply text-xs font-medium uppercase tracking-wider mb-1.5;
+	color: var(--color-text-muted);
+}
+
+.blog-content .callout p {
+	margin-bottom: 0;
+}
+
+.blog-content .callout.callout-warning .callout-label {
+	color: #d97706;
+}
+
+.blog-content .callout.callout-info .callout-label {
+	color: var(--color-text-muted);
+}
+
+/* Blog Content: Stat Highlight Blocks */
+.blog-content .stat-row {
+	@apply grid gap-3 my-8;
+	grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+
+.blog-content .stat-card {
+	@apply rounded-xl text-center py-5 px-4;
+	background: hsla(0, 0%, 100%, 0.03);
+	border: 0.5px solid hsla(0, 0%, 100%, 0.08);
+}
+
+.blog-content .stat-value {
+	@apply block text-2xl font-bold mb-1;
+	color: var(--cat-color, var(--color-accent));
+}
+
+.blog-content .stat-label {
+	@apply block text-xs text-text-muted;
+}
+
+/* Blog Content: Pull Quotes */
+.blog-content .pull-quote {
+	@apply my-8 py-1 px-0 text-center;
+	border: none;
+}
+
+.blog-content .pull-quote p {
+	@apply text-lg font-medium leading-relaxed text-text italic;
+	margin-bottom: 0;
+}
+
+.blog-content .pull-quote .pull-quote-source {
+	@apply block text-xs text-text-muted mt-2 not-italic;
+}
+
+/* Blog Content: Styled Tables */
+.blog-content .data-table {
+	@apply w-full my-8 text-sm;
+	border-collapse: separate;
+	border-spacing: 0;
+	border: 0.5px solid hsla(0, 0%, 100%, 0.08);
+	border-radius: 12px;
+	overflow: hidden;
+}
+
+.blog-content .data-table thead {
+	background: hsla(0, 0%, 100%, 0.04);
+}
+
+.blog-content .data-table th {
+	@apply text-left text-xs font-semibold uppercase tracking-wider text-text-muted py-3 px-4;
+}
+
+.blog-content .data-table td {
+	@apply py-3 px-4 text-text-secondary;
+	border-top: 0.5px solid hsla(0, 0%, 100%, 0.06);
+}
+
+.blog-content .data-table tbody tr:hover {
+	background: var(--hover-fill);
+}
+
+.blog-content .data-table .table-highlight {
+	@apply font-semibold;
+	color: var(--cat-color, var(--color-accent));
+}
+
+/* End-of-article mark */
+.blog-end-mark {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	margin: 2.25rem auto 0;
+	max-width: 720px;
+	color: var(--color-text-muted);
+}
+
+.blog-end-mark::before,
+.blog-end-mark::after {
+	content: '';
+	display: block;
+	height: 0.5px;
+	width: 56px;
+	background: linear-gradient(to right, transparent, hsla(0, 0%, 100%, 0.15), transparent);
+}
+
+.blog-end-mark-dot {
+	width: 5px;
+	height: 5px;
+	border-radius: 50%;
+	background: var(--cat-color, var(--color-accent));
+	opacity: 0.85;
+}
+
+/* Author avatar (initial circle) in byline */
+.blog-author-avatar {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 22px;
+	height: 22px;
+	border-radius: 50%;
+	background: linear-gradient(135deg, var(--cat-color, var(--color-accent)) 0%, hsla(0, 0%, 100%, 0.08) 130%);
+	color: #0a0a0a;
+	font-size: 10px;
+	font-weight: 700;
+	letter-spacing: 0;
+	margin-right: 8px;
+	flex-shrink: 0;
+	box-shadow: 0 0 0 0.5px hsla(0, 0%, 100%, 0.06);
+}
+
+/* Author Byline (blog post) */
+.blog-author-byline {
+	@apply text-sm text-text-secondary mt-2;
+}
+
+/* Author Box (blog post) */
+.author-box {
+	@apply bg-surface border-[0.5px] border-border rounded-2xl p-5 mt-8;
+}
+
+.author-box-label {
+	@apply text-[11px] font-semibold uppercase tracking-wider text-text-muted mb-3;
+}
+
+.author-box-name {
+	@apply text-[15px] font-semibold text-text;
+}
+
+.author-box-role {
+	@apply text-xs text-accent mt-0.5;
+}
+
+.author-box-bio {
+	@apply text-sm text-text-secondary leading-relaxed mt-2;
+	margin-bottom: 0;
+}
+
+.home-author-credit {
+	@apply text-xs text-text-muted text-center mt-10;
+}
+
+.home-author-credit a {
+	@apply text-accent no-underline;
+}
+
+/* Affiliate Disclosure */
+.affiliate-disclosure {
+	@apply text-[11px] text-text-muted text-center mt-3 leading-relaxed;
+}
+
+/* Animation */
+.animate-in {
+	animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+	from { opacity: 0; transform: translateY(4px); }
+	to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive */
+@media (min-width: 640px) {
+	.result-value {
+		@apply text-[52px];
+	}
+}
+
+/* Platform Header */
+.platform-header {
+	@apply text-center pt-7 pb-6 sm:pt-8;
+}
+
+.platform-header-icon {
+	@apply w-11 h-11 mx-auto rounded-xl overflow-hidden mb-4;
+}
+
+.platform-header-icon img {
+	@apply w-full h-full object-cover;
+}
+
+.platform-header-title {
+	@apply text-[23px] sm:text-[26px] font-bold text-text leading-tight;
+	margin: 0;
+	letter-spacing: -0.02em;
+	text-wrap: balance;
+}
+
+.platform-header-sub {
+	@apply text-[13px] text-text-muted mt-3 leading-relaxed;
+	margin-bottom: 0;
+	text-wrap: pretty;
+}
+
+@media (min-width: 640px) {
+	.platform-header-sub {
+		max-width: 46ch;
+		margin-left: auto;
+		margin-right: auto;
+	}
+}
+
+/* Comparison Header */
+.comparison-header {
+	@apply text-center pt-8 pb-6;
+}
+
+.comparison-logos {
+	@apply flex items-center justify-center gap-4 mb-4;
+}
+
+.comparison-logo {
+	@apply w-12 h-12 rounded-xl overflow-hidden;
+}
+
+.comparison-logo img {
+	@apply w-full h-full object-cover;
+}
+
+.comparison-vs {
+	@apply text-lg font-bold text-text-muted;
+}
+
+.comparison-title {
+	@apply text-[23px] sm:text-[26px] font-bold text-text leading-tight;
+	margin: 0;
+	letter-spacing: -0.02em;
+	text-wrap: balance;
+}
+
+.comparison-subtitle {
+	@apply text-sm text-text-secondary mt-2;
+	margin-bottom: 0;
+}
+
+/* Comparison Rates */
+.comparison-rates {
+	@apply grid grid-cols-2 gap-3 mb-6;
+}
+
+.comparison-rate-card {
+	@apply bg-surface border-[0.5px] border-border rounded-2xl p-4 text-center;
+}
+
+.comparison-rate-name {
+	@apply text-sm font-medium text-text-secondary mb-1;
+}
+
+.comparison-rate-value {
+	@apply text-lg font-bold text-accent;
+}
+
+.comparison-rate-label {
+	@apply text-xs text-text-muted mt-0.5;
+}
+
+/* Comparison Verdict */
+.comparison-verdict {
+	@apply bg-surface border-[0.5px] border-border rounded-2xl p-4 mb-6 text-center;
+}
+
+.comparison-verdict-label {
+	@apply block text-xs font-semibold uppercase tracking-wider text-text-muted mb-1;
+}
+
+.comparison-verdict-value {
+	@apply text-sm text-text;
+}
+
+/* Comparison Three Column */
+.comparison-three-col {
+	@apply grid grid-cols-3;
+}
+
+/* Comparison Goal */
+.comparison-goal {
+	@apply mt-14;
+}
+
+/* Milestone Section (shared by platform + comparison) */
+.milestone-section {
+	@apply mt-14;
+}
+
+.milestone-title {
+	@apply text-[13px] font-semibold uppercase tracking-wider text-text-muted mb-4;
+}
+
+.milestone-table {
+	@apply bg-surface border-[0.5px] border-border rounded-2xl overflow-hidden;
+}
+
+.milestone-row {
+	@apply flex items-center justify-between px-4 py-3 text-sm;
+	min-height: 48px;
+}
+
+.milestone-row:not(:last-child) {
+	@apply border-b-[0.5px] border-divider;
+}
+
+.milestone-header-row {
+	@apply text-xs font-semibold uppercase tracking-wider text-text-muted bg-black/20;
+}
+
+.milestone-earnings {
+	@apply font-semibold text-accent tabular-nums;
+}
+
+/* Goal Header */
+.goal-header {
+	@apply text-center pt-7 pb-6 sm:pt-8;
+}
+
+.goal-title {
+	@apply text-[23px] sm:text-[26px] font-bold text-text leading-tight;
+	margin: 0;
+	letter-spacing: -0.02em;
+	text-wrap: balance;
+}
+
+.goal-subtitle {
+	@apply text-sm text-text-secondary mt-2.5 leading-relaxed;
+	margin-bottom: 0;
+	text-wrap: pretty;
+}
+
+@media (min-width: 640px) {
+	.goal-subtitle {
+		max-width: 44ch;
+		margin-left: auto;
+		margin-right: auto;
+	}
+}
+
+/* Goal Table */
+.goal-table {
+	@apply mb-6;
+}
+
+.goal-grid {
+	display: grid;
+	grid-template-columns: 1fr 4.75rem 5.75rem;
+	align-items: center;
+	gap: 8px;
+}
+
+@media (min-width: 640px) {
+	.goal-grid {
+		grid-template-columns: 1fr 5rem 6.5rem;
+	}
+}
+
+.goal-row-link {
+	@apply no-underline text-text transition-colors cursor-pointer;
+}
+
+.goal-platform {
+	@apply flex items-center gap-2;
+}
+
+.goal-platform-icon {
+	@apply w-6 h-6 rounded-md overflow-hidden;
+}
+
+/* Reverse Section */
+.reverse-section {
+	@apply mt-14;
+}
+
+.reverse-card {
+}
+
+.reverse-title {
+	@apply text-[13px] font-semibold uppercase tracking-wider text-text-muted mb-4;
+}
+
+.reverse-answer {
+	@apply text-sm text-text-secondary mb-2 leading-relaxed;
+}
+
+.reverse-answer strong {
+	@apply text-accent;
+}
+
+/* Internal Links */
+.internal-links {
+	@apply mt-14 mb-8;
+}
+
+.internal-links-title {
+	@apply text-[13px] font-semibold uppercase tracking-wider text-text-muted mb-4;
+}
+
+.internal-links-grid {
+	@apply grid grid-cols-1 sm:grid-cols-2 gap-2;
+}
+
+.internal-link-card {
+	@apply block py-3 px-4 text-[13px] font-medium text-text-secondary bg-surface border-[0.5px] border-border rounded-xl no-underline transition-all;
+}
+
+/* Hover effects - only on devices that support hover */
+@media (hover: hover) {
+	/* FILL */
+	.service-row:hover,
+	.faq-item:hover .faq-question,
+	.goal-row-link:hover,
+	.currency-pill:not(.active):hover {
+		background: var(--hover-fill);
+	}
+
+	.distrokid-pill:hover {
+		background: var(--hover-fill-strong);
+	}
+
+	.currency-pill.active {
+		cursor: default;
+	}
+
+	.result-cta:hover {
+		@apply text-text;
+	}
+
+	/* RAISE */
+	.distro-banner:hover,
+	.affiliate-bottom:hover,
+	.affiliate:hover,
+	.internal-link-card:hover,
+	.home-blog-card:hover {
+		border-color: var(--hover-edge);
+		transform: translateY(-1px);
+		box-shadow: var(--hover-shadow);
+	}
+
+	.expand-btn:hover {
+		@apply text-text-secondary;
+	}
+
+	.faq-item:hover .faq-question {
+		@apply text-text;
+	}
+
+	.faq-item:hover .faq-icon {
+		@apply text-text-secondary;
+	}
+
+	.faq-link:hover {
+		@apply opacity-80;
+	}
+
+	.link:hover {
+		@apply text-text border-text-muted;
+	}
+
+	.footer-link:hover,
+	.footer-link.accent:hover {
+		@apply underline;
+	}
+
+	.internal-link-card:hover {
+		@apply text-text;
+	}
+
+	.blog-back:hover {
+		@apply text-text;
+	}
+
+	.home-blog-view-all:hover {
+		@apply text-text;
+	}
+}
+
+/* Creator calculator rate tables
+   ------------------------------
+   These carry three columns and one of them can be a full sentence, which is
+   more than the site's 530px reading column can hold without every row turning
+   into a stack of wrapped fragments. On wide screens let the table alone step
+   outside that column: the prose above and below keeps a comfortable measure,
+   and the data gets the width it actually needs.
+
+   The negative margin is derived, not guessed: 50% resolves against the
+   container's content box, so `50% - half the target width` overhangs each
+   side by the same amount and the table stays optically centred. */
+@media (min-width: 1024px) {
+	.creator-table-breakout {
+		width: 680px;
+		margin-left: calc(50% - 340px);
+	}
+}
+
+/* ---------------------------------------------------------------------------
+   Ad slots (see src/lib/data/placements.ts)
+
+   The unit rendered by SponsorSlot.svelte on every page outside the homepage.
+   Shares the sponsor-banner proportions so a paid sponsor moving from the
+   homepage into an inline slot keeps the same visual weight, but carries its
+   own accent variants so advertisers aren't all forced into Boost's cream.
+--------------------------------------------------------------------------- */
+.slot {
+	@apply relative block no-underline rounded-2xl mt-6 mb-3 px-4 py-3.5 sm:px-5 sm:py-4 transition-colors;
+	background: hsl(0, 0%, 10.2%);
+	border: 0.5px solid rgba(255, 255, 255, 0.08);
+}
+
+.slot-flush {
+	@apply mt-0;
+}
+
+.slot-top {
+	@apply flex items-center justify-between mb-2.5 gap-3;
+}
+
+.slot-logo {
+	@apply block flex-shrink-0;
+	height: 18px;
+	width: auto;
+	opacity: 0.95;
+}
+
+/* Square app icons rather than wide lockups. 18px of height on a 1:1 mark reads
+   much smaller than on a 3.5:1 wordmark, so these get a little more of it, plus
+   the corner radius the icon is drawn to expect. */
+.slot-logo-icon {
+	height: 21px;
+	width: 21px;
+	border-radius: 5px;
+}
+
+.slot-badge {
+	@apply text-[10px] font-semibold tracking-[0.08em] uppercase rounded-full px-2 py-0.5;
+}
+
+.slot-tag {
+	@apply text-[10px] font-medium tracking-[0.14em] uppercase ml-auto;
+	color: var(--text-muted);
+}
+
+.slot-body {
+	@apply flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4;
+}
+
+.slot-text {
+	@apply flex-1 min-w-0 text-center sm:text-left;
+}
+
+.slot-headline {
+	@apply text-[15px] font-semibold leading-snug mb-1;
+	color: #efefef;
+	letter-spacing: -0.005em;
+}
+
+.slot-meta {
+	@apply text-[12.5px] leading-snug;
+	color: #a3a3a3;
+}
+
+.slot-cta {
+	@apply flex items-center justify-center gap-1 py-2.5 px-4 text-[13px] font-semibold rounded-lg whitespace-nowrap transition-transform flex-shrink-0 w-full sm:w-auto sm:py-2 sm:px-3.5;
+}
+
+/* Accent variants. One per advertiser brand. */
+.slot-violet {
+	background:
+		radial-gradient(130% 140% at 0% 0%, rgba(139, 92, 246, 0.10), transparent 55%),
+		hsl(0, 0%, 10.2%);
+	border-color: rgba(139, 92, 246, 0.22);
+}
+.slot-violet .slot-badge {
+	color: #c4b5fd;
+	background: rgba(139, 92, 246, 0.16);
+}
+.slot-violet .slot-cta {
+	color: #fff;
+	background: linear-gradient(180deg, #8b5cf6, #7c3aed);
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 1px 3px rgba(0, 0, 0, 0.22);
+}
+
+.slot-amber {
+	background:
+		radial-gradient(130% 140% at 0% 0%, rgba(245, 158, 11, 0.10), transparent 55%),
+		hsl(0, 0%, 10.2%);
+	border-color: rgba(245, 158, 11, 0.22);
+}
+.slot-amber .slot-badge {
+	color: #fcd34d;
+	background: rgba(245, 158, 11, 0.16);
+}
+.slot-amber .slot-cta {
+	color: #1a1a1a;
+	background: linear-gradient(180deg, #fbbf24, #d99a0b);
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 1px 3px rgba(0, 0, 0, 0.22);
+}
+
+.slot-boost {
+	background:
+		radial-gradient(130% 140% at 0% 0%, rgba(255, 238, 184, 0.10), transparent 55%),
+		hsl(0, 0%, 10.2%);
+	border-color: rgba(255, 238, 184, 0.22);
+}
+.slot-boost .slot-logo {
+	height: 20px;
+	filter: invert(1);
+}
+.slot-boost .slot-cta {
+	color: #1a1a1a;
+	background: linear-gradient(180deg, #ffeeb8, #dbc68a);
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 1px 3px rgba(0, 0, 0, 0.22);
+}
+
+/* RAISE. One rule for every slot: the brand colour lives in the resting border,
+   the badge and the button, so hover does not need nine variants of it. */
+@media (hover: hover) {
+	.slot:hover {
+		border-color: var(--hover-edge);
+		transform: translateY(-1px);
+		box-shadow: var(--hover-shadow);
+	}
+}
+
+/* Competing slots are handled in resolveSlot now, which returns nothing for
+   any slot the previewed placement does not occupy. Hiding .slot here would
+   have hidden the previewed unit too, since it is a .slot itself. */
+
+/* Result-moment offer. Sits directly under the calculated figure, so it gets a
+   little more presence than an inline slot without competing with the number
+   itself. */
+/* The offer under the calculated figure.
+
+   It carries a caret pointing up at the number, and sits closer to it than a
+   free-standing slot would. The unit is a response to the amount on screen
+   rather than a banner that happens to be underneath, and without the tether it
+   read as page furniture people scroll past. */
+.slot-result {
+	/* The caret eats 7px of this, so it reads as ~11px of clearance from the line
+	   above rather than the 18px the value suggests. */
+	@apply mt-[18px] mb-0;
+}
+
+
+.slot-teal {
+	background:
+		radial-gradient(130% 140% at 0% 0%, rgba(20, 184, 166, 0.10), transparent 55%),
+		hsl(0, 0%, 10.2%);
+	border-color: rgba(20, 184, 166, 0.22);
+}
+.slot-teal .slot-badge {
+	color: #5eead4;
+	background: rgba(20, 184, 166, 0.16);
+}
+.slot-teal .slot-cta {
+	color: #06302c;
+	background: linear-gradient(180deg, #2dd4bf, #14a396);
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 1px 3px rgba(0, 0, 0, 0.22);
+}
+
+.slot-emerald {
+	background:
+		radial-gradient(130% 140% at 0% 0%, rgba(16, 185, 129, 0.14), transparent 55%),
+		hsl(0, 0%, 10.2%);
+	border-color: rgba(16, 185, 129, 0.30);
+}
+.slot-emerald .slot-badge {
+	color: #6ee7b7;
+	background: rgba(16, 185, 129, 0.18);
+}
+.slot-emerald .slot-cta {
+	color: #04291d;
+	background: linear-gradient(180deg, #34d399, #10a271);
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 1px 3px rgba(0, 0, 0, 0.22);
+}
+/*
+	Sized for optical width, not height. This lockup is 3.55:1 against Amuse's
+	5.44:1, so matching Amuse at 15px rendered it 53px wide against their 82px and
+	it read as an afterthought next to the Sponsored tag. 23px puts both marks at
+	the same 82px, which is what the eye actually compares.
+*/
+.slot-emerald .slot-logo {
+	height: 23px;
+}
+
+.slot-indigo {
+	background:
+		radial-gradient(130% 140% at 0% 0%, rgba(99, 102, 241, 0.14), transparent 55%),
+		hsl(0, 0%, 10.2%);
+	border-color: rgba(99, 102, 241, 0.30);
+}
+.slot-indigo .slot-badge {
+	color: #a5b4fc;
+	background: rgba(99, 102, 241, 0.18);
+}
+.slot-indigo .slot-cta {
+	color: #fff;
+	background: linear-gradient(180deg, #6366f1, #4f46e5);
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 1px 3px rgba(0, 0, 0, 0.22);
+}
+
+/* Partner name as text, used until a logo file is dropped into static/. */
+.slot-wordmark {
+	@apply text-[13px] font-semibold tracking-tight;
+	color: #efefef;
+}
+
+/* Amuse accent, using their published brand yellow #FAE62D. */
+.slot-amuse {
+	background:
+		radial-gradient(130% 140% at 0% 0%, rgba(250, 230, 45, 0.12), transparent 55%),
+		hsl(0, 0%, 10.2%);
+	border-color: rgba(250, 230, 45, 0.26);
+}
+.slot-amuse .slot-badge {
+	color: #fae62d;
+	background: rgba(250, 230, 45, 0.14);
+}
+.slot-amuse .slot-cta {
+	color: #17160a;
+	background: linear-gradient(180deg, #fae62d, #ddc90f);
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 3px rgba(0, 0, 0, 0.22);
+}
+/* The wordmark is a wide lockup, so it needs more height than a square mark. */
+.slot-amuse .slot-logo {
+	height: 15px;
+}
+
+/* Symphonic accent, using their brand pink #E0387B. */
+.slot-symphonic {
+	background:
+		radial-gradient(130% 140% at 0% 0%, rgba(224, 56, 123, 0.14), transparent 55%),
+		hsl(0, 0%, 10.2%);
+	border-color: rgba(224, 56, 123, 0.28);
+}
+.slot-symphonic .slot-badge {
+	color: #f078a4;
+	background: rgba(224, 56, 123, 0.16);
+}
+.slot-symphonic .slot-cta {
+	color: #fff;
+	background: linear-gradient(180deg, #e0387b, #c22a67);
+	box-shadow:
+		inset 0 1px 0 rgba(255, 255, 255, 0.24),
+		0 1px 3px rgba(0, 0, 0, 0.22);
+}
+
+/* UnitedMasters accent, using the brand red the distributor data already
+   carries for them (#E63946). */
+.slot-unitedmasters {
+	background:
+		radial-gradient(130% 140% at 0% 0%, rgba(230, 57, 70, 0.13), transparent 55%),
+		hsl(0, 0%, 10.2%);
+	border-color: rgba(230, 57, 70, 0.28);
+}
+.slot-unitedmasters .slot-badge {
+	color: #f4838c;
+	background: rgba(230, 57, 70, 0.16);
+}
+.slot-unitedmasters .slot-cta {
+	color: #fff;
+	background: linear-gradient(180deg, #e63946, #c22633);
+	box-shadow:
+		inset 0 1px 0 rgba(255, 255, 255, 0.24),
+		0 1px 3px rgba(0, 0, 0, 0.22);
+}
+/* Two-line lockup, bars plus "United" over "Masters" at 3.53:1. Sized by height
+   like the other wordmarks, but it needs more of it: at the default 18px each
+   line of text is about 7px and unreadable. 26px puts them near 10px each. */
+.slot-unitedmasters .slot-logo {
+	height: 26px;
+}
+
+/* Sponsored long-form section, when a sponsor holds the featured slot on a
+   page. Labelled rather than styled to blend in: paid copy has to be
+   distinguishable from the surrounding editorial.
+
+   Neutral warm border rather than one sponsor's brand colour: it sits around
+   whichever sponsor holds the slot, so a hard-coded yellow clashed with any
+   partner who wasn't Amuse. */
+.editorial-card-sponsored {
+	border-color: rgba(255, 255, 255, 0.14);
+}
+
+.editorial-sponsored-tag {
+	display: block;
+	font-size: 12px;
+	font-weight: 500;
+	color: #8a8a8a;
+	margin-bottom: 6px;
+}

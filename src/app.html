@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en" class="scheme-only-dark">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" href="%sveltekit.assets%/favicon.ico" />
+		<link rel="apple-touch-icon" href="%sveltekit.assets%/icon-192x192.png" />
+		<link rel="manifest" href="%sveltekit.assets%/manifest.json" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="theme-color" content="#34d399" />
+		<meta name="author" content="Streaming Calculator" />
+		<!-- Inter is self-hosted (see the @font-face rules in src/app.css), so there is no
+		     third-party font origin left to preconnect to. Preloading the latin subset starts
+		     the fetch alongside the stylesheet instead of after it. crossorigin is required
+		     even same-origin: font requests are always made in CORS mode. -->
+		<link rel="preload" as="font" type="font/woff2" href="%sveltekit.assets%/fonts/inter-latin.woff2" crossorigin>
+		<link rel="alternate" type="application/rss+xml" title="Streaming Calculator Blog" href="/feed.xml" />
+		%sveltekit.head%
+	</head>
+	<body data-sveltekit-preload-data="hover">
+		<div style="display: contents">%sveltekit.body%</div>
+	</body>
+</html>

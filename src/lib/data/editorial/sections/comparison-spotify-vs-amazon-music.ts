@@ -1,0 +1,18 @@
+import type { EditorialSection } from '../index';
+
+export const sections: EditorialSection[] = [
+	{
+		title: `Subscription Tiers and Rate Impact`,
+		content: `<p>Both Spotify and Amazon Music run <strong>multi-tier subscription models</strong>, but the structure and impact of those tiers on per-stream rates differ in important ways. These differences help explain why Amazon Music's average rate of $0.004 to $0.007 exceeds Spotify's $0.003 to $0.005, even though both platforms have free and paid tiers.</p>
+<p>Spotify's tier structure is straightforward: a free ad-supported tier and Premium subscriptions at various price points (individual, duo, family, student). The free tier makes up a significant portion of Spotify's total user base, and these users generate substantially less revenue per stream than Premium subscribers, pulling down the overall average.</p>
+<p>Amazon Music's tiers are more layered. <strong>Amazon Music Unlimited</strong> subscribers pay a dedicated music subscription and generate the highest per-stream rates. <strong>Amazon Music Prime</strong> listeners get music bundled with their Amazon Prime membership. Since Prime's $14.99/month fee covers way more than just music, the music-attributed revenue per Prime Music listener is lower than a dedicated music subscriber, but still above a free-tier listener. <strong>Amazon Music Free</strong> is the ad-supported tier with limited functionality.</p>
+<p>The net result: Amazon Music's average rate slightly exceeds Spotify's because even its lowest tier (Prime Music) generates more music-attributed revenue per listener than Spotify's free tier. But Amazon Music's total audience is smaller, so the higher rate doesn't automatically translate to higher total earnings for most artists.</p>`
+	},
+	{
+		title: `Growth Potential: Where Should New Artists Focus?`,
+		content: `<p>For new artists deciding where to put promotional energy, the Spotify vs Amazon Music choice usually comes down to discovery infrastructure versus underserved opportunity. Each platform offers distinct advantages early in your career.</p>
+<p>Spotify is the default choice for most new artists because of its discovery infrastructure. Algorithmic playlists like Discover Weekly and Release Radar actively surface new music based on listening behavior. Spotify's editorial team reviews thousands of submissions weekly. The Spotify for Artists platform provides solid analytics for understanding and growing your audience. If you have no existing following, Spotify's algorithms give your music the best shot at reaching new listeners organically.</p>
+<p>Amazon Music offers something different: less competition in a growing market. Because most independent artists pour their promotional efforts into Spotify and Apple Music, Amazon Music's playlist ecosystem is less crowded. Landing a feature on an Amazon Music editorial playlist may be more realistic for an emerging artist than getting the same placement on Spotify. Voice-driven discovery through Alexa can also surface your music to listeners who'd never find it through active browsing.</p>
+<p>For most new artists, the best strategy is Spotify-first with Amazon Music awareness. Distribute to both platforms, focus your active promo (playlist pitching, social media marketing, ad campaigns) on Spotify where discovery tools are strongest, and periodically check your Amazon Music analytics for organic growth that might warrant more attention. As you gather data on where your audience actually listens, adjust your platform strategy accordingly. Model different scenarios with our <a href="/spotify-calculator">Spotify</a> and <a href="/amazon-music-calculator">Amazon Music</a> calculators.</p>`
+	}
+];

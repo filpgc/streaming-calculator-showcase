@@ -1,0 +1,20 @@
+import type { EditorialSection } from '../index';
+
+export const sections: EditorialSection[] = [
+	{
+		title: `What It Takes to Earn $10,000 from Streaming`,
+		content: `<p>Earning <strong>$10,000 per month from streaming alone</strong> puts you in the top tier of independent musicians. At Spotify's average rate, that means roughly 2.5 million monthly streams, which implies either a large, active fanbase or one or more tracks with major viral or playlist momentum. Across all platforms, an artist at this level is probably generating 1.5-3 million total monthly streams.</p>
+<p>Very few artists get here through one platform or one track. More commonly, $10,000/month earners have built a substantial catalog (50-200+ tracks), maintain monthly listeners in the hundreds of thousands, and hold placements on major editorial playlists. They typically also have strong multi-platform presence, with Spotify, Apple Music, and YouTube Music each contributing meaningful revenue.</p>
+<p>The artist profile at this level usually includes: consistent releases over two or more years, professional marketing and PR support (in-house or hired), established relationships with playlist editors, a social media following in the tens or hundreds of thousands, and a mailing list that drives reliable first-week streams for every new release. This doesn't happen overnight. It represents sustained investment in audience building.</p>
+<p>Keep in mind that $10,000/month in gross streaming revenue isn't $10,000 in your pocket. After distributor fees (typically 0-15% for indie distributors, more for label deals), taxes (20-40% depending on your country), and reinvestment in marketing, production, and promotion, net take-home may be $5,000-$8,000. Artists at this level need solid financial planning and ideally should work with an accountant who understands music industry income.</p>`
+	},
+	{
+		title: `Diversifying Revenue Beyond Streaming`,
+		content: `<p>If you're earning or targeting $10,000 per month from streaming, you're almost certainly in a position to <strong>diversify beyond streaming royalties</strong>. The most successful independent artists in 2026 treat streaming as one piece of a multi-faceted income strategy.</p>
+<p><strong>Live performance</strong> remains the biggest revenue source for most professional musicians. Artists with streaming numbers that generate $10,000/month typically have enough of a following to book paid shows, tours, and festival slots. Live income often exceeds streaming income at this level, and shows drive streaming growth as fans revisit your music after seeing you perform.</p>
+<p>Merch is another big one. With a fanbase large enough to generate millions of monthly streams, you've got a built-in market for branded merchandise: apparel, accessories, vinyl, limited-edition items. Direct-to-fan sales through your own website capture the highest margins, and platforms like Shopify make setup straightforward.</p>
+<p><strong>Sync licensing</strong> (placing your music in TV, films, commercials, video games) can generate substantial one-time payments ranging from hundreds to tens of thousands per placement. Artists with a professional catalog and clean rights documentation are well-positioned for sync. Register with sync licensing agencies and make sure your music is in sync libraries.</p>
+<p>Fan-funded revenue through platforms like Patreon, Bandcamp, and Buy Me A Coffee lets your most dedicated fans support you directly. Even a small percentage of your listener base converting to monthly supporters at $5-$10/month can generate thousands in extra monthly income. Offer exclusive content, early access to releases, and behind-the-scenes material to keep them engaged.</p>
+<p>The streaming income that gets you to $10,000/month is powerful not just as direct revenue but as proof of audience that unlocks all these additional opportunities. Use your streaming numbers to negotiate better show guarantees, attract sync interest, and demonstrate market viability to potential partners and collaborators.</p>`
+	}
+];
